@@ -1,0 +1,15 @@
+Task 1:
+
+export PROJECT=[GCP Project ID]
+
+*************************************************************************************************************
+
+Task 4:
+
+ls
+
+export GOOGLE_APPLICATION_CREDENTIALS=key.json
+
+python3 analyze-images.py $DEVSHELL_PROJECT_ID $DEVSHELL_PROJECT_ID
+
+******************************************************************************************************
