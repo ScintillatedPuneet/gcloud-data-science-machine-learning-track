@@ -1,0 +1,73 @@
+#todo
+
+model = Sequential()
+model.add(layers.Dense(200, input_shape=(input_size,), activation='relu'))
+model.add(layers.Dense(50, activation='relu'))
+model.add(layers.Dense(20, activation='relu'))
+model.add(layers.Dense(1, activation='sigmoid'))
+model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
+model.fit(train_data, train_labels, epochs=10, batch_size=2048, validation_split=0.1)
+
+#todo
+limited_model = Sequential()
+limited_model.add(layers.Dense(200, input_shape=(input_size,), activation='relu'))
+limited_model.add(layers.Dense(50, activation='relu'))
+limited_model.add(layers.Dense(20, activation='relu'))
+limited_model.add(layers.Dense(1, activation='sigmoid'))
+limited_model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
+limited_model.fit(limited_train_data, limited_train_labels, epochs=10, batch_size=2048, validation_split=0.1)
+
+#todo
+GCP_PROJECT = 'yourprojectid'
+MODEL_BUCKET = 'gs://yourprojectid'
+MODEL_NAME = 'complete_model' #do not modify
+LIM_MODEL_NAME = 'limited_model' #do not modify
+VERSION_NAME = 'v1'
+REGION = 'us-central1'
+
+(after this check your bucket created or not if not then create manually and set bucket name as project id)
+
+
+#todo
+!gcloud ai-platform models create $MODEL_NAME --regions $REGION
+
+#todo
+!gcloud ai-platform versions create $VERSION_NAME \
+--model=$MODEL_NAME \
+--framework='Tensorflow' \
+--runtime-version=2.1 \
+--origin=$MODEL_BUCKET/saved_model/my_model \
+--staging-bucket=$MODEL_BUCKET \
+--python-version=3.7
+(if error occure then do manually go to ai>models>completemodel>createversion>v1)
+
+#todo
+!gcloud ai-platform models create $LIM_MODEL_NAME --regions $REGION
+
+#todo
+!gcloud ai-platform versions create $VERSION_NAME \
+--model=$LIM_MODEL_NAME \
+--framework='Tensorflow' \
+--runtime-version=2.1 \
+--origin=$MODEL_BUCKET/saved_limited_model/my_limited_model \
+--staging-bucket=$MODEL_BUCKET \
+--python-version=3.7
+(if error occure then do manually go to ai>models>limitedmodel>createversion>v1)
+
+***************************************************************************************************************************************************************************
+
+1. In the Performance and Fairness tab, slice by sex (applicant_sex_name_Female). How does the complete model compare to the limited model for females?
+
+ans: The complete model has equal performance across sexes, whereas the limited model is much worse on females
+
+
+
+2. Click on one of the datapoints in the middle of the arc. In the datapoint editor, change (applicant_sex_name_Female) to 0, and (applicant_sex_name_Male) to 1. Now run the inference again. How does the model change?
+
+ans: The limited model has a significantly larger delta than the complete model, whereas the complete model has almost no change
+
+
+
+3. In the Performance and Fairness tab, use the fairness buttons to see the thresholds for the sexes for demographic parity between males and females. How does this change the thresholds for the limited model?
+
+ans: The thresholds have to be wildly different for the limited model
